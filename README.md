@@ -1,2 +1,2 @@
-# responsive_shiny
+# responsive shiny
 Traditional shiny plots
