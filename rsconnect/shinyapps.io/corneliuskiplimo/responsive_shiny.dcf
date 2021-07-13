@@ -1,0 +1,14 @@
+name: responsive_shiny
+title: responsive_shiny
+username:
+account: corneliuskiplimo
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4381304
+bundleId: 4815364
+url: https://corneliuskiplimo.shinyapps.io/responsive_shiny/
+when: 1626187971.92921
+lastSyncTime: 1626187971.92921
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|git config.R|LICENSE|README.md
