@@ -1,7 +1,6 @@
 ui <- fluidPage(
-  selectInput("dataset", 
-              label = "Dataset", 
-              choices = ls("package:datasets")),
+  selectInput("var", "Variable", names(data)),
+  numericInput("bins", "bins", 10, min = 1),
   verbatimTextOutput("summary"),
   tableOutput("table")
 )

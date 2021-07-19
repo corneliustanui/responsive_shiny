@@ -1,15 +1,16 @@
 server <- function(input, output, session) {
-  # Create a reactive expression
-  dataset <- reactive({
-    get(input$dataset, "package:datasets")
-  })
   
-  output$summary <- renderPrint({
-    # Use a reactive expression by calling it like a function
-    summary(dataset())
-  })
-  
-  output$table <- renderTable({
-    dataset()
-  })
+  # load packages
+  library(tidyverse)
+  library(flexdashboard)
+  library(shiny)
+  library(plotly)
+  library(DT)
+  library(ggplot2)
+  library(ggpmisc)
+
+    data <- reactive(mtcars[[input$var]])
+    output$hist <- renderPlot({
+      hist(data(), breaks = input$bins, main = input$var)
+    }, res = 96)
 }
