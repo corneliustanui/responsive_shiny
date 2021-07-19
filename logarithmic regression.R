@@ -50,7 +50,7 @@ lm_fit <- lm_model %>%
   fit(lifeExp ~ gdpPercap + pop + continent, data = data)
 
 # View lm_fit properties
-tidy(lm_fit, exponentiate = TRUE) %>%
+tidy(lm_fit) %>%
   filter(p.value < 0.05)
 
 glance(lm_fit) 
