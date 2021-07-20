@@ -45,7 +45,7 @@ library(gifski)       # for gif outputs from animated plots
 library(av)         # for video output
 ```
 
-## Plots {.tabset .tabset-pills}
+## Plots {.tabset}
 
 ### Static
 
@@ -61,12 +61,15 @@ p <- gapminder %>%
   geom_point() +
   geom_jitter() + 
   geom_smooth(method = "lm",
-              formula = y ~ log(x),
-              color = "red",
-              se = FALSE)+
+              formula = y ~ log10(x), 
+              se = FALSE, 
+              size = 0.5, 
+              color = "black", 
+              linetype="dotted")+
   labs(title = "Life Expectancy vs GDP Per Capita",
        y = "Life Expectancy",
        x = "GDP Per Capita")+
+  scale_x_continuous(labels = dollar) +
   theme(plot.title = element_text(hjust = 0.5),
         legend.position = c(0.88, 0.4),
         legend.title = element_blank(),
@@ -80,35 +83,69 @@ ggplotly(p)
 ```
 
 
-### Animated
+### GG Animate
 
-This is a basic animated `ggplot2` plot of `lifeExp ~ gdpPercap` by `pop` and `continent`. 
+This is a basic [`gganimate`](https://gganimate.com/) animation using `ggplot2`, a plot of `lifeExp ~ gdpPercap` by `pop` and `continent`. 
 
 ```{r plot2}
-p1 <- gapminder %>%
-  ggplot( aes(x = gdpPercap, 
-              y = lifeExp, 
-              size = pop, 
-              color = continent)) +
-  geom_point() +
-  geom_jitter() + 
-  geom_smooth(method = "lm",
-              formula = y ~ log(x),
-              color = "red",
-              se = FALSE)+
-  labs(title = "Life Expectancy vs GDP Per Capita",
+p2 <- gapminder %>%
+  ggplot(aes(x = gdpPercap, 
+           y = lifeExp, 
+           size = pop, 
+           colour = country)) +
+  geom_point(alpha = 0.7, 
+             show.legend = FALSE) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  labs(title = "Life Expectancy vs GDP Per Capita by 'Year: {frame_time}'",
        y = "Life Expectancy",
-       x = "GDP Per Capita")+
-  theme(plot.title = element_text(hjust = 0.5),
-        legend.position = c(0.88, 0.4),
-        legend.title = element_blank(),
-        legend.background = element_blank())+
+       x = "Logarithmic GDP Per Capita") +
+  theme(plot.title = element_text(hjust = 0.5))+
   transition_time(year) +
   ease_aes('linear')
 
+p2
 
-p1
+
+# save as gif
+animate(p2, fps = 10, width = 750, height = 450)
+anim_save("life expectancy.gif")
+
+# save as a video
+animate(p2, renderer = ffmpeg_renderer(), width = 800, height = 450)
+anim_save("life expectancy.mp4")
+
 ```
+
+
+### Plotly Animate
+
+This is a basic [plotly](https://plotly.com/) animation using and `ggplot2` plot of `lifeExp ~ gdpPercap` by `pop` and `continent`. 
+
+```{r plot2}
+p3 <- gapminder %>%
+  ggplot(aes(gdpPercap, lifeExp, color = continent)) +
+  geom_point(aes(size = pop, frame = year, ids = country)) +
+  scale_x_log10() +
+  labs(title = "Life Expectancy vs GDP Per Capita by Year",
+       y = "Life Expectancy",
+       x = "Logarithmic GDP Per Capita") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+ggplotly(p3)%>% 
+  animation_opts(1000, 
+                 easing = "elastic", 
+                 redraw = FALSE) %>% 
+  animation_button(x = 1, 
+                   xanchor = "right",
+                   y = 0,
+                   yanchor = "bottom") %>%
+  animation_slider(currentvalue = list(prefix = "YEAR ", 
+                                       font = list(color="blue")))
+
+```
+
 
 set the default engine
 
@@ -151,6 +188,6 @@ glance(lm_fit)%>%
 variable importance
 
 ```{r importance}
-vip(lm_fit, 
-    aesthetics = list(fill = 2:7))
+ggplotly(vip(lm_fit, 
+    aesthetics = list(fill = 2:7)), tooltip = "Importance")
 ```
